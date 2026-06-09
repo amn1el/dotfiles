@@ -1,0 +1,28 @@
+prefer-no-csd
+screenshot-path null
+
+environment {
+    // XDG
+    XDG_CURRENT_DESKTOP "niri"
+    XDG_SESSION_TYPE "wayland"
+    // QT
+    QT_QPA_PLATFORM "wayland"
+    QT_QPA_PLATFORMTHEME "gtk3"
+    QT_WAYLAND_DISABLE_WINDOWDECORATION "1"
+    // Toolkit Backend
+    GDK_BACKEND "wayland"
+    SDL_VIDEODRIVER "wayland"
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
+}
+
+cursor {
+}
+
+debug {
+    // Allows notification actions and window activation from Noctalia.
+    honor-xdg-activation-with-invalid-serial
+}
+
+hotkey-overlay {
+   skip-at-startup
+}

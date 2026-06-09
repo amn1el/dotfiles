@@ -1,0 +1,33 @@
+layout {
+    gaps 16
+    center-focused-column "never" 
+    background-color "transparent"
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+    
+    struts {}
+    focus-ring {
+        width 1
+        active-color "#7aa2f7"
+        inactive-color "#3b4261"
+    }
+    
+    border {
+        off
+    }
+    
+    insert-hint {
+        color "#7aa2f780"
+    }
+}
+
+recent-windows {
+    highlight {
+        active-color "#7aa2f7"
+        urgent-color "#f7768e"
+    }
+}
