@@ -10,7 +10,6 @@ environment {
     QT_QPA_PLATFORMTHEME "gtk3"
     QT_WAYLAND_DISABLE_WINDOWDECORATION "1"
     // Toolkit Backend
-    GDK_BACKEND "wayland"
     SDL_VIDEODRIVER "wayland"
     ELECTRON_OZONE_PLATFORM_HINT "auto"
 }

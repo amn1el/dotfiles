@@ -33,6 +33,7 @@ fi
 info "Updating the system and installing packages from official repositories..."
 sudo pacman -Syu --noconfirm --needed \
     base-devel git protobuf go nodejs bun rustup \
+    libayatana-appindicator libappindicator \
     nautilus fish alacritty adw-gtk-theme fastfetch \
     steam gamemode libappimage \
     ttf-hack-nerd ttf-meslo-nerd ttf-jetbrains-mono ttf-jetbrains-mono-nerd

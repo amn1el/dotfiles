@@ -18,15 +18,16 @@
         "ignoreMouseInput": false,
         "overviewLayer": false,
         "pinnedApps": [
-            "Alacritty",
+            "brave-browser",
+            "spotify",
             "code",
-            "brave-browser"
+            "Alacritty"
         ],
         "position": "top_center",
         "screenshotAnnotationTool": "",
         "showCategories": true,
         "showIconBackground": false,
-        "sortByMostUsed": true,
+        "sortByMostUsed": false,
         "terminalCommand": "alacritty -e",
         "viewMode": "list"
     },
@@ -125,7 +126,7 @@
                 },
                 {
                     "compactMode": true,
-                    "hideMode": "visible",
+                    "hideMode": "hidden",
                     "hideWhenIdle": false,
                     "id": "MediaMini",
                     "maxWidth": 230,
@@ -158,7 +159,7 @@
                     "chevronColor": "none",
                     "colorizeIcons": false,
                     "drawerEnabled": true,
-                    "hidePassive": false,
+                    "hidePassive": true,
                     "id": "Tray",
                     "pinned": [
                     ]
@@ -392,7 +393,7 @@
         "animationDisabled": false,
         "animationSpeed": 1,
         "autoStartAuth": false,
-        "avatarImage": "/home/amniel/.face",
+        "avatarImage": "/home/amniel/.face.png",
         "boxRadiusRatio": 1,
         "clockFormat": "hh\\nmm",
         "clockStyle": "custom",
