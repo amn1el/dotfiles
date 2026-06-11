@@ -36,7 +36,7 @@ sudo pacman -Syu --noconfirm --needed \
     libayatana-appindicator libappindicator \
     nautilus fish alacritty adw-gtk-theme fastfetch \
     steam gamemode libappimage \
-    ttf-hack-nerd ttf-meslo-nerd ttf-jetbrains-mono ttf-jetbrains-mono-nerd
+    ttf-hack-nerd ttf-meslo-nerd ttf-jetbrains-mono ttf-jetbrains-mono-nerd inter-font
 success "Base packages installed."
 
 # Configure default Rust toolchain
@@ -105,8 +105,8 @@ done
 
 if [ -d "$WALLPAPERS_DIR" ]; then
     mkdir -p "$HOME/Pictures/Wallpapers"
-    cp -r "$WALLPAPERS_DIR/"* "$HOME/Pictures/wallpapers/"
-    success "Wallpapers copied to ~/Pictures/wallpapers"
+    cp -r "$WALLPAPERS_DIR/"* "$HOME/Pictures/Wallpapers/"
+    success "Wallpapers copied to ~/Pictures/Wallpapers"
 fi
 
 # ---------------------------------------------------------
@@ -123,6 +123,7 @@ success "Dark GTK theme applied."
 info "Configuring Nautilus as the default file manager..."
 xdg-mime default org.gnome.Nautilus.desktop inode/directory
 gsettings set org.gnome.nautilus.preferences default-folder-viewer 'icon-view'
+xdg-user-dirs-gtk-update
 success "Nautilus is now the default file manager."
 
 if [ "$SHELL" != "$(which fish)" ]; then
