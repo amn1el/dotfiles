@@ -24,9 +24,10 @@ binds {
     XF86MonBrightnessUp                 allow-when-locked=true { spawn-sh "qs -c noctalia-shell ipc call brightness increase"; }
     XF86MonBrightnessDown               allow-when-locked=true { spawn-sh "qs -c noctalia-shell ipc call brightness decrease"; }
 
-    // ─── Print ───
+    // ─── Screenshots ───
     Print                               { screenshot; }
     Alt+Print                           { screenshot-window; }
+    Ctrl+Print                          { screenshot-screen; }
 
     // ─── Window Movement and Focus ───
     Mod+Q                               { close-window; }
@@ -115,11 +116,6 @@ binds {
     Mod+T                               { toggle-window-floating; }
     Mod+F                               { fullscreen-window; }
     Mod+W                               { toggle-column-tabbed-display; }
-
-    // ─── Screenshots ───
-    CTRL+Shift+1                        { screenshot; }
-    CTRL+Shift+2                        { screenshot-screen; }
-    CTRL+Shift+3                        { screenshot-window; }
 
     // ─── Emergency Escape Key ───
     Mod+ESCAPE                          allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }

@@ -3,5 +3,5 @@ output "eDP-1" {
     scale 1
     transform "normal"
     position x=0 y=0
-    variable-refresh-rate on-demand=false
+    variable-refresh-rate on-demand=true
 }
