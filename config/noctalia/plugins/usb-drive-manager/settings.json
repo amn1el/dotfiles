@@ -2,8 +2,8 @@
   "autoMount": false,
   "fileBrowser": "nautilus",
   "terminalCommand": "alacritty",
-  "showNotifications": true,
-  "hideWhenEmpty": false,
-  "showBadge": true,
+  "showNotifications": false,
+  "hideWhenEmpty": true,
+  "showBadge": false,
   "iconColor": "none"
 }
