@@ -10,30 +10,17 @@ Item {
     property var pluginApi: null
     property var devices: []
     property bool loading: false
-
-    readonly property int mountedCount: {
-        let c = 0
-        for (let i = 0; i < devices.length; i++) {
-            if (devices[i].isMounted) c++
-        }
-        return c
-    }
+    property int mountedCount: 0
+    property bool pendingAutoMount: false
 
     // ===== SETTINGS SHORTCUTS =====
-
     readonly property bool autoMount:          pluginApi?.pluginSettings?.autoMount          ?? false
     readonly property string fileBrowser:      pluginApi?.pluginSettings?.fileBrowser        || "yazi"
     readonly property string terminalCommand:  pluginApi?.pluginSettings?.terminalCommand    || "kitty"
     readonly property bool showNotifications:  pluginApi?.pluginSettings?.showNotifications  ?? true
     readonly property bool hideWhenEmpty:      pluginApi?.pluginSettings?.hideWhenEmpty      ?? false
 
-    // ===== INIT =====
-
-    Component.onCompleted: {
-        refreshDevices()
-    }
-
-    // ===== IPC =====
+    Component.onCompleted: refreshDevices()
 
     IpcHandler {
         target: "plugin:usb-drive-manager"
@@ -200,52 +187,40 @@ Item {
         running: false
         stdout: StdioCollector {}
         stderr: StdioCollector {}
-
         onExited: exitCode => {
-            if (exitCode === 0) {
-                if (root.showNotifications) {
-                    ToastService.showNotice(
-                        pluginApi?.tr("notifications.ejected"),
-                        ejectProc.deviceLabel || ejectProc.devicePath
-                    )
-                }
-            } else {
-                const errMsg = String(stderr.text).trim()
-                ToastService.showError(
-                    pluginApi?.tr("notifications.eject-failed"),
-                    errMsg || ejectProc.devicePath
-                )
+            if (exitCode === 0 && root.showNotifications) {
+                ToastService.showNotice(pluginApi?.tr("notifications.ejected"), ejectProc.deviceLabel || ejectProc.devicePath)
+            } else if (exitCode !== 0) {
+                ToastService.showError(pluginApi?.tr("notifications.eject-failed"), String(stderr.text).trim() || ejectProc.devicePath)
             }
             refreshDebounce.restart()
         }
     }
 
     // ===== INTERNAL HELPERS =====
-
     QtObject {
         id: internal
-
-        // Parse lsblk JSON output and extract USB partitions
         function parseDevices(blockdevices) {
             const result = []
+            let newMountedCount = 0
 
             function processDevice(dev, parentPath, parentIsUsb) {
                 const isUsb = parentIsUsb || dev.tran === "usb" || dev.hotplug === true || dev.hotplug === "1"
                 const isRemovable = dev.rm === true || dev.rm === "1"
 
-                // Process children (partitions) of USB devices
                 if (dev.children && dev.children.length > 0) {
                     for (const child of dev.children) {
                         processDevice(child, dev.path || ("/dev/" + dev.name), isUsb)
                     }
                 }
 
-                // Only include partitions (or whole-disk if no partitions) with a filesystem
                 const hasFs = dev.fstype && dev.fstype.length > 0
-                const isPartition = parentPath !== null
-
                 if ((isUsb || isRemovable) && hasFs) {
                     const mountpoint = dev.mountpoint || ""
+                    const isMounted = mountpoint.length > 0
+                    
+                    if (isMounted) newMountedCount++
+
                     result.push({
                         name:        dev.name || "",
                         path:        dev.path || ("/dev/" + dev.name),
@@ -254,7 +229,7 @@ Item {
                         size:        dev.size || "",
                         fstype:      dev.fstype || "",
                         mountpoint:  mountpoint,
-                        isMounted:   mountpoint.length > 0,
+                        isMounted:   isMounted,
                         model:       dev.model || "",
                         vendor:      dev.vendor ? dev.vendor.trim() : "",
                         usedPercent: 0,
