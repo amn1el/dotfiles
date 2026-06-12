@@ -1,3 +1,4 @@
+// Main.qml
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -28,15 +29,12 @@ Item {
         function refresh() {
             root.refreshDevices()
         }
-
         function unmountAll() {
             root.unmountAll()
         }
     }
 
     // ===== DEVICE MONITORING =====
-
-    // udevadm monitor watches for block device add/remove events
     Process {
         id: deviceWatcher
         command: ["udevadm", "monitor", "--subsystem-match=block", "--property"]
@@ -44,44 +42,30 @@ Item {
 
         stdout: SplitParser {
             onRead: line => {
-                // Trigger refresh on USB add/remove events
-                if (line.startsWith("ACTION=add") || line.startsWith("ACTION=remove")) {
+                if (line.startsWith("ACTION=add")) {
+                    root.pendingAutoMount = true
+                    refreshDebounce.restart()
+                } else if (line.startsWith("ACTION=remove") || line.startsWith("ACTION=change")) {
                     refreshDebounce.restart()
                 }
             }
         }
-
-        onExited: exitCode => {
-            // Restart watcher if it dies unexpectedly
-            if (exitCode !== 0) {
-                restartWatcherTimer.start()
-            }
-        }
+        onExited: exitCode => { if (exitCode !== 0) restartWatcherTimer.start() }
     }
 
     Timer {
         id: restartWatcherTimer
         interval: 3000
-        repeat: false
         onTriggered: deviceWatcher.running = true
     }
 
-    // Debounce rapid udev events (e.g. partition table re-read)
     Timer {
         id: refreshDebounce
         interval: 800
-        repeat: false
-        onTriggered: {
-            refreshDevices()
-            if (root.autoMount) {
-                autoMountNewDevices()
-            }
-        }
+        onTriggered: refreshDevices()
     }
 
     // ===== DEVICE ENUMERATION =====
-
-    // lsblk -J gives us structured JSON with all block device info
     Process {
         id: deviceQuery
         command: [
@@ -89,7 +73,6 @@ Item {
             "-o", "NAME,SIZE,FSTYPE,LABEL,MOUNTPOINT,HOTPLUG,TRAN,MODEL,VENDOR,RM,PATH,PKNAME"
         ]
         running: false
-
         stdout: StdioCollector {}
         stderr: StdioCollector {}
 
@@ -99,6 +82,12 @@ Item {
                 try {
                     const data = JSON.parse(String(stdout.text))
                     root.devices = internal.parseDevices(data.blockdevices || [])
+
+                    if (root.autoMount && root.pendingAutoMount) {
+                        root.autoMountNewDevices()
+                        root.pendingAutoMount = false
+                    }
+
                     root.devicesChanged()
                 } catch (e) {
                     console.warn("[usb-drive-manager] Failed to parse lsblk output:", e)
@@ -107,16 +96,11 @@ Item {
         }
     }
 
-    // ===== DISK USAGE =====
-
-    // df gives us used/free space for mounted devices
     Process {
         id: dfQuery
         command: ["df", "--output=target,pcent,used,avail", "-h"]
         running: false
-
         stdout: StdioCollector {}
-
         onExited: exitCode => {
             if (exitCode === 0) {
                 internal.parseDfOutput(String(stdout.text))
@@ -125,7 +109,6 @@ Item {
     }
 
     // ===== ACTION PROCESSES =====
-
     Process {
         id: mountProc
         property string devicePath: ""
@@ -133,21 +116,11 @@ Item {
         running: false
         stdout: StdioCollector {}
         stderr: StdioCollector {}
-
         onExited: exitCode => {
-            if (exitCode === 0) {
-                if (root.showNotifications) {
-                    ToastService.showNotice(
-                        pluginApi?.tr("notifications.mounted"),
-                        mountProc.deviceLabel || mountProc.devicePath
-                    )
-                }
-            } else {
-                const errMsg = String(stderr.text).trim()
-                ToastService.showError(
-                    pluginApi?.tr("notifications.mount-failed"),
-                    errMsg || mountProc.devicePath
-                )
+            if (exitCode === 0 && root.showNotifications) {
+                ToastService.showNotice(pluginApi?.tr("notifications.mounted"), mountProc.deviceLabel || mountProc.devicePath)
+            } else if (exitCode !== 0) {
+                ToastService.showError(pluginApi?.tr("notifications.mount-failed"), String(stderr.text).trim() || mountProc.devicePath)
             }
             refreshDebounce.restart()
         }
@@ -160,21 +133,11 @@ Item {
         running: false
         stdout: StdioCollector {}
         stderr: StdioCollector {}
-
         onExited: exitCode => {
-            if (exitCode === 0) {
-                if (root.showNotifications) {
-                    ToastService.showNotice(
-                        pluginApi?.tr("notifications.unmounted"),
-                        unmountProc.deviceLabel || unmountProc.devicePath
-                    )
-                }
-            } else {
-                const errMsg = String(stderr.text).trim()
-                ToastService.showError(
-                    pluginApi?.tr("notifications.unmount-failed"),
-                    errMsg || unmountProc.devicePath
-                )
+            if (exitCode === 0 && root.showNotifications) {
+                ToastService.showNotice(pluginApi?.tr("notifications.unmounted"), unmountProc.deviceLabel || unmountProc.devicePath)
+            } else if (exitCode !== 0) {
+                ToastService.showError(pluginApi?.tr("notifications.unmount-failed"), String(stderr.text).trim() || unmountProc.devicePath)
             }
             refreshDebounce.restart()
         }
@@ -239,65 +202,46 @@ Item {
                 }
             }
 
-            for (const dev of blockdevices) {
-                processDevice(dev, null, false)
-            }
-
+            for (const dev of blockdevices) processDevice(dev, null, false)
+            root.mountedCount = newMountedCount
             return result
         }
 
-        // Parse df output and update device usage stats
         function parseDfOutput(text) {
             const lines = text.split("\n")
             const usageMap = {}
-
             for (let i = 1; i < lines.length; i++) {
                 const parts = lines[i].trim().split(/\s+/)
                 if (parts.length >= 4) {
-                    const mountpoint = parts[0]
-                    const pcent = parseInt(parts[1]) || 0
-                    const used = parts[2] || ""
-                    const avail = parts[3] || ""
-                    usageMap[mountpoint] = { pcent, used, avail }
+                    usageMap[parts[0]] = { pcent: parseInt(parts[1]) || 0, used: parts[2] || "", avail: parts[3] || "" }
                 }
             }
-
-            // Update devices with usage info
-            const updated = root.devices.map(dev => {
+            root.devices = root.devices.map(dev => {
                 if (dev.isMounted && usageMap[dev.mountpoint]) {
-                    const u = usageMap[dev.mountpoint]
                     return Object.assign({}, dev, {
-                        usedPercent: u.pcent,
-                        usedSize:    u.used,
-                        freeSize:    u.avail
+                        usedPercent: usageMap[dev.mountpoint].pcent,
+                        usedSize:    usageMap[dev.mountpoint].used,
+                        freeSize:    usageMap[dev.mountpoint].avail
                     })
                 }
                 return dev
             })
-
-            root.devices = updated
             root.devicesChanged()
         }
     }
 
     // ===== PUBLIC API =====
-
     function refreshDevices() {
         root.loading = true
         deviceQuery.running = false
         deviceQuery.running = true
-        // Also refresh disk usage after a short delay
         dfTimer.restart()
     }
 
     Timer {
         id: dfTimer
         interval: 1200
-        repeat: false
-        onTriggered: {
-            dfQuery.running = false
-            dfQuery.running = true
-        }
+        onTriggered: { dfQuery.running = false; dfQuery.running = true }
     }
 
     function mountDevice(devicePath, deviceLabel) {
@@ -317,28 +261,20 @@ Item {
     }
 
     function ejectDevice(devicePath, parentPath, deviceLabel) {
-        // First unmount the partition, then power off the parent disk
         const target = parentPath || devicePath
         if (ejectProc.running) return
         ejectProc.devicePath = target
         ejectProc.deviceLabel = deviceLabel
-        ejectProc.command = [
-            "sh", "-c",
-            "udisksctl unmount -b " + devicePath + " 2>/dev/null; udisksctl power-off -b " + target
-        ]
+        ejectProc.command = ["sh", "-c", "udisksctl unmount -b " + devicePath + " 2>/dev/null; udisksctl power-off -b " + target]
         ejectProc.running = true
     }
 
     function openInFileBrowser(mountpoint) {
         const browser = root.fileBrowser || "yazi"
         if (browser === "yazi" || browser === "ranger" || browser === "lf" || browser === "nnn") {
-            // Terminal file managers need a terminal emulator
             const term = root.terminalCommand || "kitty"
             const termLower = term.toLowerCase()
-            // Ptyxis, GNOME Terminal, and WezTerm prefer `--` instead of `-e`
-            const flag = (termLower.indexOf("ptyxis") !== -1
-                       || termLower.indexOf("gnome-terminal") !== -1
-                       || termLower.indexOf("wezterm") !== -1) ? "--" : "-e"
+            const flag = (termLower.indexOf("ptyxis") !== -1 || termLower.indexOf("gnome-terminal") !== -1 || termLower.indexOf("wezterm") !== -1) ? "--" : "-e"
             Quickshell.execDetached([term, flag, browser, mountpoint])
         } else {
             Quickshell.execDetached([browser, mountpoint])
@@ -347,16 +283,9 @@ Item {
 
     function unmountAll() {
         for (let i = 0; i < devices.length; i++) {
-            const dev = devices[i]
-            if (dev.isMounted) {
-                Quickshell.execDetached(["udisksctl", "unmount", "-b", dev.path])
-            }
+            if (devices[i].isMounted) Quickshell.execDetached(["udisksctl", "unmount", "-b", devices[i].path])
         }
-        if (root.showNotifications) {
-            ToastService.showNotice(
-                pluginApi?.tr("notifications.unmount-all")
-            )
-        }
+        if (root.showNotifications) ToastService.showNotice(pluginApi?.tr("notifications.unmount-all"))
         refreshDebounce.restart()
     }
 
@@ -367,25 +296,17 @@ Item {
             const parent = dev.parentPath || dev.path
             if (!ejected.includes(parent)) {
                 ejected.push(parent)
-                Quickshell.execDetached([
-                    "sh", "-c",
-                    "udisksctl unmount -b " + dev.path + " 2>/dev/null; udisksctl power-off -b " + parent
-                ])
+                Quickshell.execDetached(["sh", "-c", "udisksctl unmount -b " + dev.path + " 2>/dev/null; udisksctl power-off -b " + parent])
             }
         }
-        if (root.showNotifications) {
-            ToastService.showNotice(
-                pluginApi?.tr("notifications.eject-all")
-            )
-        }
+        if (root.showNotifications) ToastService.showNotice(pluginApi?.tr("notifications.eject-all"))
         refreshDebounce.restart()
     }
 
     function autoMountNewDevices() {
         for (let i = 0; i < devices.length; i++) {
-            const dev = devices[i]
-            if (!dev.isMounted && dev.fstype) {
-                mountDevice(dev.path, dev.label)
+            if (!devices[i].isMounted && devices[i].fstype) {
+                mountDevice(devices[i].path, devices[i].label)
             }
         }
     }
