@@ -63,7 +63,7 @@ else
 fi
 
 info "Installing packages from AUR using Paru..."
-paru -S --noconfirm --needed brave-bin gearlever spotify visual-studio-code-bin wrk noctalia-shell
+paru -S --noconfirm --needed brave-bin spotify visual-studio-code-bin noctalia-shell
 success "AUR packages installed."
 
 # ---------------------------------------------------------
