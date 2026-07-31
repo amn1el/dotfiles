@@ -17,7 +17,7 @@ A personal customized, interactive, and minimal scrolling-tiling Wayland develop
 | :--- | :--- | :--- |
 | **OS** | [CachyOS](https://cachyos.org/) | Optimized Arch-based distribution |
 | **Compositor** | [Niri](https://github.com/YaL标记/niri) | Scrollable-tiling Wayland compositor |
-| **Desktop Shell** | [Noctalia-shell](https://github.com/noctalia-shell) | Custom panel, launcher, and system components |
+| **Desktop Shell** | [Noctalia](https://github.com/noctalia-dev) | Custom panel, launcher, and system components |
 | **Terminal** | [Alacritty](https://alacritty.org/) | GPU-accelerated terminal emulator |
 | **Shell** | [Fish](https://fishshell.com/) | Smart and user-friendly command-line shell |
 | **File Manager** | [Nautilus](https://apps.gnome.org/Nautilus/) | Clean GNOME file manager configured with grid view |
