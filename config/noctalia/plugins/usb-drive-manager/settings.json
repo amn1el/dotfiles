@@ -1,9 +1,0 @@
-{
-  "autoMount": false,
-  "fileBrowser": "nautilus",
-  "terminalCommand": "alacritty",
-  "showNotifications": false,
-  "hideWhenEmpty": true,
-  "showBadge": false,
-  "iconColor": "none"
-}

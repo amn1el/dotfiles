@@ -32,7 +32,7 @@ fi
 # ---------------------------------------------------------
 info "Updating the system and installing packages from official repositories..."
 sudo pacman -Syu --noconfirm --needed \
-    base-devel git protobuf go nodejs bun rustup \
+    base-devel git protobuf go nodejs rustup \
     libayatana-appindicator libappindicator \
     nautilus fish alacritty adw-gtk-theme fastfetch \
     steam gamemode libappimage \
@@ -63,7 +63,7 @@ else
 fi
 
 info "Installing packages from AUR using Paru..."
-paru -S --noconfirm --needed brave-bin spotify visual-studio-code-bin noctalia-shell
+paru -S --noconfirm --needed brave-bin spotify visual-studio-code-bin noctalia
 success "AUR packages installed."
 
 # ---------------------------------------------------------
