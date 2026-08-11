@@ -24,9 +24,9 @@ binds {
     XF86MonBrightnessDown               allow-when-locked=true { spawn-sh "noctalia msg brightness-down"; }
 
     // ─── Screenshots ───
-    Print                               { screenshot; }
-    Alt+Print                           { screenshot-window; }
-    Ctrl+Print                          { screenshot-screen; }
+    Print                               { spawn-sh "noctalia msg screenshot-region"; }
+    Alt+Print                           { spawn-sh "noctalia msg screenshot-fullscreen"; }
+    Ctrl+Print                          { spawn-sh "noctalia msg screenshot-fullscreen pick"; }
 
     // ─── Window Movement and Focus ───
     Mod+Q                               { close-window; }
