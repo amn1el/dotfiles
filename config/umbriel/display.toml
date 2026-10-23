@@ -1,0 +1,20 @@
+# =====================
+# Outputs
+# =====================
+[output.eDP-1]
+mode = "1920x1200@60"
+position = [0, 0]
+scale = 1.0
+vrr = "fullscreen"
+hdr = "auto"
+
+# =====================
+# Screencast
+# =====================
+# By default, the first target-changing action during an active share asks for
+# confirmation. Disable that protection only if immediate keybind changes are
+# preferred.
+# https://docs.noctalia.dev/umbriel/configuration/#screencast
+# [screencast]
+# disable_dynamic_confirmation = true
+

@@ -1,0 +1,22 @@
+[include]
+files = [
+    "./general.toml",
+    "./display.toml",
+    "./input.toml",
+    "./layout.toml",
+    "./keybinds.toml",
+    "./rules.toml"
+]
+
+[include.optional]
+files = []
+
+
+
+# =====================
+# Overview
+# =====================
+[hot_corners.top_left]
+enabled = true
+delay_ms = 500
+action = "overview-open"

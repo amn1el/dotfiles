@@ -11,4 +11,3 @@ set -gx PATH "$(go env GOPATH)/bin:$PATH"
 function fish_greeting
 end
 
-fish_add_path /home/amniel/.spicetify

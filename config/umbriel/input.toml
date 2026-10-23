@@ -1,0 +1,25 @@
+# =====================
+# Input
+# =====================
+[input.keyboard]
+layout = "us,latam"
+options = "grp:alt_shift_toggle"
+numlock_toggle = true
+
+[input.focus]
+follows_mouse = true
+
+[input.touch]
+enabled = true
+map_to_output = "eDP-1"
+
+[input.touchpad]
+tap = true
+natural_scroll = true
+sensitivity = 0.0
+accel_profile = "flat"
+
+[input.mouse]
+natural_scroll = true
+accel_profile = "flat"
+sensitivity = 0.0

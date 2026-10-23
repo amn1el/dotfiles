@@ -10,11 +10,14 @@ input {
     touchpad {
         tap
         natural-scroll
+        accel-profile "flat"
+         accel-speed 0.0
     }
 
     mouse {
-        //accel-profile "flat"
-        accel-speed 0.2
+        natural-scroll
+        accel-profile "flat"
+        accel-speed 0.0
     }
 
     focus-follows-mouse

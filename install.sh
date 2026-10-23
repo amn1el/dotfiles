@@ -32,8 +32,8 @@ fi
 # ---------------------------------------------------------
 info "Updating the system and installing packages from official repositories..."
 sudo pacman -Syu --noconfirm --needed \
+    noctalia noctalia-greeter umbriel \
     base-devel git protobuf go nodejs rustup \
-    libayatana-appindicator libappindicator \
     nautilus fish alacritty adw-gtk-theme fastfetch \
     steam gamemode libappimage \
     ttf-hack-nerd ttf-meslo-nerd ttf-jetbrains-mono ttf-jetbrains-mono-nerd inter-font
@@ -63,7 +63,7 @@ else
 fi
 
 info "Installing packages from AUR using Paru..."
-paru -S --noconfirm --needed brave-bin spotify visual-studio-code-bin noctalia
+paru -S --noconfirm --needed visual-studio-code-bin
 success "AUR packages installed."
 
 # ---------------------------------------------------------
@@ -85,7 +85,7 @@ read -p "Select deployment method [S/c]: " deploy_choice
 deploy_choice=${deploy_choice:-S}
 echo ""
 
-for app in alacritty fastfetch fish niri noctalia; do
+for app in alacritty fastfetch fish umbriel noctalia; do
     if [ -d "$CONFIG_DIR/$app" ]; then
         if [ -L "$HOME/.config/$app" ] || [ -d "$HOME/.config/$app" ]; then
             rm -rf "$HOME/.config/$app"
