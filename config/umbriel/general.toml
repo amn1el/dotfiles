@@ -6,6 +6,7 @@ autostart = ["noctalia"]
 xwayland = true
 xwayland_native_resolution = false
 xwayland_xsettings = true
+show_cheatsheet = false
 
 # =====================
 # Lid events

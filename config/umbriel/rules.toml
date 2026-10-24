@@ -22,24 +22,19 @@ default_floating = true
 default_maximize = false
 default_position = { x = 20, y = 20, anchor = "bottom_right" }
 
-[[window_rule]]
-match.title = "^notificationtoasts_.+_desktop"
-default_position = { x = 0, y = 0, anchor = "bottom_right" }
-default_focused = false
-default_pinned = true
+# [[window_rule]]
+# match.app_id = "steam"
+# default_floating = true
 
 [[window_rule]]
-match.app_id = "^steam_app_.*$"
-confine_pointer = true
-
-[[window_rule]]
-border_width = 1
-shadow = true
+match.app_id = "steam"
+match.title = '^notificationtoasts_\d+_desktop$'
+default_floating = true
+default_position = { x=10, y = 10, anchor="bottom_right" }
 
 # =====================
 # Layer rules
 # =====================
-# https://docs.noctalia.dev/umbriel/layer-rules/
 [[layer_rule]]
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd|desktop-widget-[^\"]*)$"
 blur = true

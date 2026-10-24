@@ -7,7 +7,7 @@ options = "grp:alt_shift_toggle"
 numlock_toggle = true
 
 [input.focus]
-follows_mouse = true
+follows_mouse = false
 
 [input.touch]
 enabled = true
