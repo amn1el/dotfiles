@@ -6,19 +6,19 @@
   "modules": [
     {
       "type": "custom",
-      "format": "┌────────────────────────────────────────────────┐"
+      "format": "┌──────────────────────────────────────────┐"
     },
     {
       "type": "os",
-      "key": "    OS"
+      "key": "    OS       "
     },
     {
       "type": "kernel",
-      "key": "    Kernel"
+      "key": "    Kernel   "
     },
     {
       "type": "packages",
-      "key": "  󰏖  Packages"
+      "key": "  󰏖  Packages "
     },
     {
       "type": "de",
@@ -26,19 +26,19 @@
     },
     {
       "type": "wm",
-      "key": "    WM"
+      "key": "    WM       "
     },
     {
       "type": "terminal",
-      "key": "    Terminal"
+      "key": "    Terminal "
     },
     {
        "type": "uptime",
-       "key": "  󰅐  Uptime"
+       "key": "  󰅐  Uptime   "
     },
     {
       "type": "custom",
-      "format": "└────────────────────────────────────────────────┘"
+      "format": "└──────────────────────────────────────────┘"
     },
     "break",
     {
@@ -46,35 +46,36 @@
     },
     {
       "type": "custom",
-      "format": "┌─────────────────────────────────────────────────┐"
+      "format": "┌───────────────────────────────────────────┐"
     },
     {
       "type": "display",
+      "format": "{1}x{2}, {3} Hz [{7}]",
       
-      "key": "  󰍹  Display"
+      "key": "  󰍹  Display "
     },
     {
       "type": "cpu",
       "format": "{1}",
-      "key": "    CPU"
+      "key": "    CPU     "
     },
     {
       "type": "gpu",
       "format": "{2}",
-      "key": "    GPU"
+      "key": "    GPU     "
     },
     {
        "type": "disk",
        "format": "{0} / {2} ({3})",
-       "key": "    Disk"
+       "key": "    Disk    "
     },
     {
       "type": "memory",
-      "key":  "    Memory"
+      "key":  "    Memory  "
     },
     {
       "type": "custom",
-      "format": "└─────────────────────────────────────────────────┘"
+      "format": "└───────────────────────────────────────────┘"
     },
     "break",
     {
