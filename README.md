@@ -32,7 +32,7 @@ A personal customized, interactive, and minimal scrolling-tiling Wayland develop
 │   ├── alacritty/       # Terminal styles & opacity
 │   ├── fastfetch/       # System fetch layout
 │   ├── fish/            # Shell aliases and prompt
-│   ├── umbriel/            # Scroll inputs, keybinds, and layout rules
+│   ├── umbriel/         # Scroll inputs, keybinds, and layout rules
 │   └── noctalia/        # UI Shell configurations
 ├── home/
 │   └── wallpapers/      # Personal collection of desktop backgrounds
