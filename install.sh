@@ -85,8 +85,8 @@ read -p "Select deployment method [S/c]: " deploy_choice
 deploy_choice=${deploy_choice:-S}
 echo ""
 
-for app in alacritty fastfetch fish umbriel noctalia; do
-    if [ -d "$CONFIG_DIR/$app" ]; then
+for app in gamemode.ini alacritty fastfetch fish umbriel noctalia; do
+    if [ -e "$CONFIG_DIR/$app" ]; then
         if [ -L "$HOME/.config/$app" ] || [ -d "$HOME/.config/$app" ]; then
             rm -rf "$HOME/.config/$app"
         fi
